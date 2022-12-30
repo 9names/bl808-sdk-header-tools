@@ -36,10 +36,10 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         ParseState::NoMatch => if let Some(m) = regex!(r"\s*struct\s*([a-zA-Z_\d]*)\s*\{").captures(&line) {
             state = ParseState::BlockName;
             data.push(String::from(m.get(1).unwrap().as_str()));
-            event!(Level::TRACE, "\nCaptures: {}", data[0]);
+            event!(Level::TRACE, "Captures: {}", data[0]);
             (state, Some(ParseResult::Capture(data)))
         }else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for register address: "/* 0x0 : soc_info0 */""
@@ -47,30 +47,30 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
             state = ParseState::BlockAddr;
             data.push(String::from(m.get(1).unwrap().as_str()));
             data.push(String::from(m.get(2).unwrap().as_str()));
-            event!(Level::TRACE, "\nCaptures: {}, {}", data[0], data[1]);
+            event!(Level::TRACE, "Captures: {}, {}", data[0], data[1]);
             (state, Some(ParseResult::Capture(data)))
         }else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for start of union: "union {"
         ParseState::BlockAddr => if let Some(m) = regex!(r"\s*union\s*\{").captures(&line) {
             state = ParseState::UnionStr;
             data.push(String::from(m.get(0).unwrap().as_str()));
-            event!(Level::TRACE,"\nMatch: {}", data[0]);
+            event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         }else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for start of struct: "struct {"
         ParseState::UnionStr => if let Some(m) = regex!(r"\s*struct\s*\{").captures(&line) {
             state = ParseState::StructStr;
             data.push(String::from(m.get(0).unwrap().as_str()));
-            event!(Level::TRACE,"\nMatch: {}", data[0]);
+            event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         }else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for field or end of struct:
@@ -84,7 +84,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
                 data.push(String::from(m.get(3).unwrap().as_str()));
                 data.push(String::from(m.get(4).unwrap().as_str()));
                 data.push(String::from(m.get(5).unwrap().as_str()));
-                event!(Level::TRACE,"\nCaptures: {}, {}, {}, {}, {}", data[0], data[1], data[2], data[3], data[4]);
+                event!(Level::TRACE,"Captures: {}, {}, {}, {}, {}", data[0], data[1], data[2], data[3], data[4]);
                 (state, Some(ParseResult::Capture(data)))
             }
             else {
@@ -92,7 +92,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
                 if let Some(m) = regex!(r"\s*} *BF;").captures(&line) {
                     state = ParseState::Size;
                     data.push(String::from(m.get(0).unwrap().as_str()));
-                    event!(Level::TRACE,"\nMatch: {}", data[0]);
+                    event!(Level::TRACE,"Match: {}", data[0]);
                     (state, Some(ParseResult::Match(data)))
                 } else {
                     event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
@@ -107,27 +107,28 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         ParseState::Field => if let Some(m) = regex!(r"\s*} *BF;").captures(&line) {
             state = ParseState::Size;
             data.push(String::from(m.get(0).unwrap().as_str()));
-            event!(Level::TRACE,"\nMatch: {}", data[0]);
+            event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         } else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for 2nd union member: "uint32_t WORD;"
         ParseState::Size => if let Some(m) = regex!(r"\s*uint32_t WORD;").captures(&line) {
             state = ParseState::Name;
             data.push(String::from(m.get(0).unwrap().as_str()));
-            event!(Level::TRACE,"\nMatch: {}", data[0]);
+            event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data))) 
         }else {
-            event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
+            event!(Level::TRACE, "WARN: 
+            Mode {state:?} unhandled line {linenum}:{line}");
             (state, None)
         },
         // Looking for name of the union: "} soc_info0;"
         ParseState::Name => if let Some(m) = regex!(r"\s*} ([a-z_\-\d]*);").captures(&line) {
             state = ParseState::BlockName;
             data.push(String::from(m.get(1).unwrap().as_str()));
-            event!(Level::TRACE,"\nCaptures: {}", data[0]);
+            event!(Level::TRACE,"Captures: {}", data[0]);
             (state, Some(ParseResult::Capture(data)))
         }else {
             event!(Level::TRACE, "\nMode {state:?} unhandled line {linenum}:{line}");
