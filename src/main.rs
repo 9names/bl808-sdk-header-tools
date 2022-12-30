@@ -1,4 +1,5 @@
 use bl808_sdk_header_tools::{parse, ParseResult, ParseState};
+use core::fmt;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
@@ -31,6 +32,20 @@ impl Field {
     }
 }
 
+impl fmt::Display for Field {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "<field>
+        <name>{}</name>
+        <description></description>
+        <lsb>{}</lsb>
+        <msb>{}</msb>\n",
+            self.name, self.lsb, self.msb,
+        )
+    }
+}
+
 #[derive(Debug)]
 struct Register {
     name: String,
@@ -47,6 +62,24 @@ impl Register {
             address_offset: "".to_string(),
             fields: vec![],
         }
+    }
+}
+
+impl fmt::Display for Register {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "<register>
+        <name>{}</name>
+        <description>{}</description>
+        <fields>\n",
+            self.name, self.description,
+        )?;
+
+        for field in &self.fields {
+            write!(f, "{field}")?;
+        }
+        write!(f, "</fields>\n</register>\n")
     }
 }
 
@@ -178,7 +211,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     for reg in registers {
-        println!("{:?}", reg);
+        println!("{}\n", reg);
     }
 
     Ok(())
