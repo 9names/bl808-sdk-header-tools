@@ -43,7 +43,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
             (state, None)
         },
         // Looking for register address: "/* 0x0 : soc_info0 */""
-        ParseState::BlockName => if let Some(m) = regex!(r"\s*\.*/* (0x\d*) : (.*) \*/").captures(&line) {
+        ParseState::BlockName => if let Some(m) = regex!(r"\s*\.*/* (0x[\dA-Fa-f]*) : (.*) \*/").captures(&line) {
             state = ParseState::BlockAddr;
             data.push(String::from(m.get(1).unwrap().as_str()));
             data.push(String::from(m.get(2).unwrap().as_str()));
