@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
         .with_ansi(false)
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
-    let f = std::fs::read("sources/headers/glb_basic.h")?;
+    let f = std::fs::read("sources/headers/glb_reg.h")?;
 
     let mut state = ParseState::NoMatch;
 
