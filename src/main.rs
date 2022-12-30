@@ -211,7 +211,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     for reg in registers {
-        println!("{}\n", reg);
+        print!("{}", reg);
     }
 
     Ok(())
