@@ -36,11 +36,11 @@ impl fmt::Display for Field {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "<field>
-        <name>{}</name>
-        <description></description>
-        <lsb>{}</lsb>
-        <msb>{}</msb>
+            "        <field>
+            <name>{}</name>
+            <description></description>
+            <lsb>{}</lsb>
+            <msb>{}</msb>
         </field>\n",
             self.name, self.lsb, self.msb,
         )
@@ -71,16 +71,16 @@ impl fmt::Display for Register {
         write!(
             f,
             "<register>
-        <name>{}</name>
-        <description>{}</description>
-        <fields>\n",
+    <name>{}</name>
+    <description>{}</description>
+    <fields>\n",
             self.name, self.description,
         )?;
 
         for field in &self.fields {
             write!(f, "{field}")?;
         }
-        write!(f, "</fields>\n</register>\n")
+        write!(f, "    </fields>\n</register>\n")
     }
 }
 
