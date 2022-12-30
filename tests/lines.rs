@@ -96,7 +96,7 @@ mod tests {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "    union {");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
     }
@@ -113,7 +113,7 @@ mod tests {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "        struct {");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
     }
@@ -147,7 +147,7 @@ mod tests {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "        } BF;");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
     }
@@ -164,7 +164,7 @@ mod tests {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "        uint32_t WORD;");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
     }

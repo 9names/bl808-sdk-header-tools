@@ -88,7 +88,7 @@ struct glb_reg {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "    union {");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
         linenum += 1;
@@ -107,7 +107,7 @@ struct glb_reg {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "        struct {");
                 }
-                ParseResult::Capture(r) => panic!("Should contain match"),
+                ParseResult::Capture(_) => panic!("Should contain match"),
             }
         };
         linenum += 1;
@@ -164,18 +164,32 @@ struct glb_reg {
             lines.next().unwrap().to_string(),
             linenum,
         );
-        assert_eq!(state, ParseState::Field);
-        assert!(parseresult.is_none());
+        assert_eq!(state, ParseState::Size);
+        assert!(parseresult.is_some());
         linenum += 1;
+        if let Some(x) = parseresult {
+            match x {
+                ParseResult::Match(r) => {
+                    let mut r_iter = r.iter();
+                    assert_eq!(r_iter.next().unwrap(), "        } BF;");
+                }
+                ParseResult::Capture(_) => panic!("Should contain match"),
+            }
+        };
 
         // 8th line is "uint32_t WORD;"
-        let (state, parseresult) = parse(
-            ParseState::Field,
-            lines.next().unwrap().to_string(),
-            linenum,
-        );
-        assert_eq!(state, ParseState::Size);
-        assert!(parseresult.is_none());
-        linenum += 1;
+        let (state, parseresult) =
+            parse(ParseState::Size, lines.next().unwrap().to_string(), linenum);
+        assert_eq!(state, ParseState::Name);
+        assert!(parseresult.is_some());
+        if let Some(x) = parseresult {
+            match x {
+                ParseResult::Match(r) => {
+                    let mut r_iter = r.iter();
+                    assert_eq!(r_iter.next().unwrap(), "        uint32_t WORD;");
+                }
+                ParseResult::Capture(_) => panic!("Should contain match"),
+            }
+        };
     }
 }
