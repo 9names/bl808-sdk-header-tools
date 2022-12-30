@@ -40,7 +40,8 @@ impl fmt::Display for Field {
         <name>{}</name>
         <description></description>
         <lsb>{}</lsb>
-        <msb>{}</msb>\n",
+        <msb>{}</msb>
+        </field>\n",
             self.name, self.lsb, self.msb,
         )
     }
