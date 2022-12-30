@@ -15,6 +15,7 @@ macro_rules! regex {
 fn main() -> anyhow::Result<()> {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
+        .with_ansi(false)
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
     let f = std::fs::read("sources/headers/glb_basic.h")?;
