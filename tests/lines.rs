@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use bl808_sdk_header_tools::*;
+
     #[test]
     fn parse_register_comment() {
         let teststring = String::from("    /* 0x0 : soc_info0 */");
@@ -14,6 +15,24 @@ mod tests {
                     let mut r_iter = r.iter();
                     assert_eq!(r_iter.next().unwrap(), "0x0");
                     assert_eq!(r_iter.next().unwrap(), "soc_info0");
+                }
+            }
+        };
+    }
+
+    #[test]
+    fn parse_register_comment2() {
+        let teststring = String::from("    /* 0xA0 : bus_cfg0 */");
+        let (state, parseresult) = parse(ParseState::BlockName, teststring, 0);
+        assert_eq!(state, ParseState::BlockAddr);
+        assert!(parseresult.is_some());
+        if let Some(x) = parseresult {
+            match x {
+                ParseResult::Match(_) => panic!("Should contain capture"),
+                ParseResult::Capture(r) => {
+                    let mut r_iter = r.iter();
+                    assert_eq!(r_iter.next().unwrap(), "0xA0");
+                    assert_eq!(r_iter.next().unwrap(), "bus_cfg0");
                 }
             }
         };
