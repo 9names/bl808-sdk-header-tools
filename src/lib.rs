@@ -35,7 +35,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for start of register block: "struct glb_reg {"
         ParseState::NoMatch => if let Some(m) = regex!(r"\s*struct\s*([a-zA-Z_\d]*)\s*\{").captures(&line) {
             state = ParseState::BlockName;
-            data.push(String::from(m.get(1).unwrap().as_str()));
+            data.push(String::from(m.get(1).unwrap().as_str().trim()));
             event!(Level::TRACE, "Captures: {}", data[0]);
             (state, Some(ParseResult::Capture(data)))
         }else {
@@ -45,8 +45,8 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for register address: "/* 0x0 : soc_info0 */""
         ParseState::BlockName => if let Some(m) = regex!(r"\s*\.*/* (0x[\dA-Fa-f]*) : (.*) \*/").captures(&line) {
             state = ParseState::BlockAddr;
-            data.push(String::from(m.get(1).unwrap().as_str()));
-            data.push(String::from(m.get(2).unwrap().as_str()));
+            data.push(String::from(m.get(1).unwrap().as_str().trim()));
+            data.push(String::from(m.get(2).unwrap().as_str().trim()));
             event!(Level::TRACE, "Captures: {}, {}", data[0], data[1]);
             (state, Some(ParseResult::Capture(data)))
         }else {
@@ -56,7 +56,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for start of union: "union {"
         ParseState::BlockAddr => if let Some(m) = regex!(r"\s*union\s*\{").captures(&line) {
             state = ParseState::UnionStr;
-            data.push(String::from(m.get(0).unwrap().as_str()));
+            data.push(String::from(m.get(0).unwrap().as_str().trim()));
             event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         }else {
@@ -66,7 +66,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for start of struct: "struct {"
         ParseState::UnionStr => if let Some(m) = regex!(r"\s*struct\s*\{").captures(&line) {
             state = ParseState::StructStr;
-            data.push(String::from(m.get(0).unwrap().as_str()));
+            data.push(String::from(m.get(0).unwrap().as_str().trim()));
             event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         }else {
@@ -79,11 +79,11 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         ParseState::StructStr => {
             if let Some(m) = regex!(r"\s*uint32_t *([a-zA-Z_\d]*) *: *(\d*); */\* *\[([\d: ]*)\],\s*([r/wsvd1p]*)\s*,\s*(0x[\da-fA-F]*) \*/.*").captures(&line) {
                 state = ParseState::StructStr;
-                data.push(String::from(m.get(1).unwrap().as_str()));
-                data.push(String::from(m.get(2).unwrap().as_str()));
-                data.push(String::from(m.get(3).unwrap().as_str()));
-                data.push(String::from(m.get(4).unwrap().as_str()));
-                data.push(String::from(m.get(5).unwrap().as_str()));
+                data.push(String::from(m.get(1).unwrap().as_str().trim()));
+                data.push(String::from(m.get(2).unwrap().as_str().trim()));
+                data.push(String::from(m.get(3).unwrap().as_str().trim()));
+                data.push(String::from(m.get(4).unwrap().as_str().trim()));
+                data.push(String::from(m.get(5).unwrap().as_str().trim()));
                 event!(Level::TRACE,"Captures: {}, {}, {}, {}, {}", data[0], data[1], data[2], data[3], data[4]);
                 (state, Some(ParseResult::Capture(data)))
             }
@@ -91,7 +91,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
                 event!(Level::TRACE,"BF capture, moving to field parsing");
                 if let Some(m) = regex!(r"\s*} *BF;").captures(&line) {
                     state = ParseState::Size;
-                    data.push(String::from(m.get(0).unwrap().as_str()));
+                    data.push(String::from(m.get(0).unwrap().as_str().trim()));
                     event!(Level::TRACE,"Match: {}", data[0]);
                     (state, Some(ParseResult::Match(data)))
                 } else {
@@ -106,7 +106,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // End of struct (in case we missed it):  "} BF;"
         ParseState::Field => if let Some(m) = regex!(r"\s*} *BF;").captures(&line) {
             state = ParseState::Size;
-            data.push(String::from(m.get(0).unwrap().as_str()));
+            data.push(String::from(m.get(0).unwrap().as_str().trim()));
             event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data)))
         } else {
@@ -116,7 +116,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for 2nd union member: "uint32_t WORD;"
         ParseState::Size => if let Some(m) = regex!(r"\s*uint32_t WORD;").captures(&line) {
             state = ParseState::Name;
-            data.push(String::from(m.get(0).unwrap().as_str()));
+            data.push(String::from(m.get(0).unwrap().as_str().trim()));
             event!(Level::TRACE,"Match: {}", data[0]);
             (state, Some(ParseResult::Match(data))) 
         }else {
@@ -127,7 +127,7 @@ pub fn parse(state: ParseState, line: String, linenum: usize) -> (ParseState, Op
         // Looking for name of the union: "} soc_info0;"
         ParseState::Name => if let Some(m) = regex!(r"\s*} ([a-z_\-\d]*);").captures(&line) {
             state = ParseState::BlockName;
-            data.push(String::from(m.get(1).unwrap().as_str()));
+            data.push(String::from(m.get(1).unwrap().as_str().trim()));
             event!(Level::TRACE,"Captures: {}", data[0]);
             (state, Some(ParseResult::Capture(data)))
         }else {

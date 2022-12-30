@@ -76,7 +76,7 @@ mod tests {
                     // assert_eq!(r_iter.next().unwrap(), "uint32_t");
                     assert_eq!(r_iter.next().unwrap(), "chip_rdy");
                     assert_eq!(r_iter.next().unwrap(), "1");
-                    assert_eq!(r_iter.next().unwrap(), "   27");
+                    assert_eq!(r_iter.next().unwrap(), "27");
                     assert_eq!(r_iter.next().unwrap(), "r");
                     assert_eq!(r_iter.next().unwrap(), "0x0");
                 }
@@ -99,7 +99,7 @@ mod tests {
                     // assert_eq!(r_iter.next().unwrap(), "uint32_t");
                     assert_eq!(r_iter.next().unwrap(), "reg2_gpio_0_set");
                     assert_eq!(r_iter.next().unwrap(), "1");
-                    assert_eq!(r_iter.next().unwrap(), "    0");
+                    assert_eq!(r_iter.next().unwrap(), "0");
                     assert_eq!(r_iter.next().unwrap(), "w1p");
                     assert_eq!(r_iter.next().unwrap(), "0x0");
                 }
@@ -117,7 +117,7 @@ mod tests {
             match x {
                 ParseResult::Match(r) => {
                     let mut r_iter = r.iter();
-                    assert_eq!(r_iter.next().unwrap(), "    union {");
+                    assert_eq!(r_iter.next().unwrap(), "union {");
                 }
                 ParseResult::Capture(_) => panic!("Should contain match"),
             }
@@ -134,7 +134,7 @@ mod tests {
             match x {
                 ParseResult::Match(r) => {
                     let mut r_iter = r.iter();
-                    assert_eq!(r_iter.next().unwrap(), "        struct {");
+                    assert_eq!(r_iter.next().unwrap(), "struct {");
                 }
                 ParseResult::Capture(_) => panic!("Should contain match"),
             }
@@ -168,7 +168,7 @@ mod tests {
             match x {
                 ParseResult::Match(r) => {
                     let mut r_iter = r.iter();
-                    assert_eq!(r_iter.next().unwrap(), "        } BF;");
+                    assert_eq!(r_iter.next().unwrap(), "} BF;");
                 }
                 ParseResult::Capture(_) => panic!("Should contain match"),
             }
@@ -185,7 +185,7 @@ mod tests {
             match x {
                 ParseResult::Match(r) => {
                     let mut r_iter = r.iter();
-                    assert_eq!(r_iter.next().unwrap(), "        uint32_t WORD;");
+                    assert_eq!(r_iter.next().unwrap(), "uint32_t WORD;");
                 }
                 ParseResult::Capture(_) => panic!("Should contain match"),
             }
