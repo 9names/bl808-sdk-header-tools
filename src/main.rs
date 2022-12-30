@@ -103,9 +103,7 @@ fn main() -> anyhow::Result<()> {
             ParseState::BlockName => {
                 if let Some(parse) = parse_result {
                     match parse {
-                        ParseResult::Match(n) => {
-                            println!("whats my name? {n:?}")
-                        }
+                        ParseResult::Match(m) => panic!("Not expecting match, got {m:?}"),
                         ParseResult::Capture(c) => {
                             if let Some(reg) = register.as_mut() {
                                 reg.name = c[0].clone();
@@ -121,7 +119,7 @@ fn main() -> anyhow::Result<()> {
                     }
                     let mut reg = Register::new();
                     match parse {
-                        ParseResult::Match(_) => panic!("Not expecting match"),
+                        ParseResult::Match(m) => panic!("Not expecting match, got {m:?}"),
                         ParseResult::Capture(c) => {
                             reg.address_offset = c[0].clone();
                             reg.description = c[1].clone();
@@ -135,7 +133,9 @@ fn main() -> anyhow::Result<()> {
                 if let Some(parse) = parse_result {
                     let mut field = Field::new();
                     match parse {
-                        ParseResult::Match(m) => println!("what a match: {m:?}"),
+                        ParseResult::Match(_m) => {
+                            // panic!("Not expecting match, got {m:?}")
+                        }
                         ParseResult::Capture(c) => {
                             field.name = c[0].clone();
                             // c[1] is number of bits, we don't need that.
@@ -152,7 +152,6 @@ fn main() -> anyhow::Result<()> {
                             field.name = c[0].clone();
                         }
                     }
-                    println!("field  {field:?}");
                     if let Some(reg) = register.as_mut() {
                         reg.fields.push(field);
                     }
@@ -161,7 +160,7 @@ fn main() -> anyhow::Result<()> {
             ParseState::Field => {
                 if let Some(parse) = parse_result {
                     match parse {
-                        ParseResult::Match(_) => panic!("Not expecting match"),
+                        ParseResult::Match(m) => panic!("Not expecting match, got {m:?}"),
                         ParseResult::Capture(c) => {
                             let mut field = Field::new();
                             field.name = c[0].clone();
@@ -185,15 +184,15 @@ fn main() -> anyhow::Result<()> {
                         }
                     }
                 } else {
-                    println!("fielding the wrong question?");
+                    panic!("No parse result");
                 }
             }
             ParseState::Size => {}
             ParseState::Name => {
                 if let Some(parse) = parse_result {
                     match parse {
-                        ParseResult::Match(n) => {
-                            println!("whats my name? {n:?}")
+                        ParseResult::Match(_m) => {
+                            //panic!("Not expecting match, got {n:?}")
                         }
                         ParseResult::Capture(c) => {
                             if let Some(reg) = register.as_mut() {
