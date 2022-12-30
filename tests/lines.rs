@@ -85,6 +85,29 @@ mod tests {
     }
 
     #[test]
+    fn parse_register_field3() {
+        let teststring =
+            String::from("uint32_t reg2_gpio_0_set  : 1; /* [    0],        w1p,        0x0 */");
+        let (state, parseresult) = parse(ParseState::StructStr, teststring, 0);
+        assert_eq!(state, ParseState::StructStr);
+        assert!(parseresult.is_some());
+        if let Some(x) = parseresult {
+            match x {
+                ParseResult::Match(_) => panic!("Should contain capture"),
+                ParseResult::Capture(r) => {
+                    let mut r_iter = r.iter();
+                    // assert_eq!(r_iter.next().unwrap(), "uint32_t");
+                    assert_eq!(r_iter.next().unwrap(), "reg2_gpio_0_set");
+                    assert_eq!(r_iter.next().unwrap(), "1");
+                    assert_eq!(r_iter.next().unwrap(), "    0");
+                    assert_eq!(r_iter.next().unwrap(), "w1p");
+                    assert_eq!(r_iter.next().unwrap(), "0x0");
+                }
+            }
+        };
+    }
+
+    #[test]
     fn parse_union() {
         let teststring = String::from("    union {");
         let (state, parseresult) = parse(ParseState::BlockAddr, teststring, 0);
